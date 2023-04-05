@@ -50,12 +50,12 @@ class HomeFragment : Fragment(), ConfirmDialogInterface {
         val root: View = binding.root
 
         // 대기 내역이 있는 경우에만 대기 정보 버튼이 보이도록 설정
-        var isExistWatingInfo : Boolean = true // 불러온 데이터의 존재여부로 판단되도혹 수정 필요
+        /*var isExistWatingInfo : Boolean = true // 불러온 데이터의 존재여부로 판단되도혹 수정 필요
         binding.waitingInfoBtn.visibility = if(isExistWatingInfo == true){
             View.VISIBLE
         }else{
             View.INVISIBLE
-        }
+        }*/
 
         // 대기 정보 버튼을 누를 경우 팝업 연결
         binding.waitingInfoBtn.setOnClickListener {
