@@ -35,7 +35,7 @@ class SearchFragment : Fragment() {
             // 검색어 매칭 하는 부분 추가
         }
 
-        // 위치 기반 추천 음식점 들이 보여질 부분
+        // 위치 기반 추천 음식점 데이터
         searchRestaurantList.apply {
             add(
                 SearchRestaurant(R.drawable.dummy_restaurant_image, 7, 4.9, 22, "#분위기좋은", "#연인끼리", "인스타맛집")
