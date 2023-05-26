@@ -38,12 +38,12 @@ class WaitingCustomDialog (
     private var _binding: DialogWaitingLayoutBinding?= null
     private val binding get() = _binding!!
 
-    private var WaitingInfoCheckInterface: WaitingInfoCheckInterface? = null
-
     private var text: String? = null
     private var num: Int? = null
     private var theme: Int? = null
     private lateinit var waitingInfo: SharedPreferences
+
+    private val WaitingInfoCheckInterface = WaitingInfoCheckInterface
 
     init {
         this.text = text
@@ -66,9 +66,11 @@ class WaitingCustomDialog (
         binding.waitingCancelBtn.setOnClickListener {
             waitingInfo = this.requireActivity().getSharedPreferences("waitingInfo", MODE_PRIVATE)
             val waitIndex = this.requireActivity().getSharedPreferences("waitingInfo", AppCompatActivity.MODE_PRIVATE).getString("waitIndex", "58").toString()
-
             this.WaitingInfoCheckInterface?.onCancelButtonClick(num!!, theme!!)
             waitingCancel(WaitIndex(waitIndex))
+            val dialog = CustomDialog(this, "대기 취소가 완료되었습니다", 0, 1 )
+                dialog.isCancelable = true
+                dialog.show(this.parentFragmentManager, "ConfirmDialog")
             dismiss()
         }
 
@@ -78,8 +80,7 @@ class WaitingCustomDialog (
             val waitIndex = this.requireActivity().getSharedPreferences("waitingInfo", AppCompatActivity.MODE_PRIVATE).getString("WaitIndex", "23").toString()
             val resPhNum = this.requireActivity().getSharedPreferences("waitingInfo", AppCompatActivity.MODE_PRIVATE).getString("resPhNum", "032 934 6188").toString()
 
-            stampNumCheck(WaitIndexInt(23))
-
+            this.WaitingInfoCheckInterface?.onDelayButtonClick(num!!, theme!!)
             dismiss()
         }
 
@@ -105,6 +106,7 @@ class WaitingCustomDialog (
 
 interface WaitingInfoCheckInterface {
     fun onCancelButtonClick(num: Int, theme: Int)
+    fun onDelayButtonClick(num: Int, theme: Int)
 }
 
 // 대기 취소 레트로핏 연결
@@ -124,46 +126,3 @@ private fun waitingCancel(WaitIndex : WaitIndex){
     })
 }
 
-// 대기 미루기 레트로핏 연결
-private fun waitingDelay(ResDelayInfo: ResDelayInfo){
-    val iRetrofit : IRetrofit? = RetrofitClient.getClient(API.BASE_URL)?.create((IRetrofit::class.java))
-    val call = iRetrofit?.waitingDelay(ResDelayInfo) ?:return
-
-    call.enqueue(object : Callback<ResWaitDelay>{
-        override fun onResponse(call: Call<ResWaitDelay>, response: Response<ResWaitDelay>) {
-            Log.d("retrofit", "대기 미루기 - 응답 성공 / t : ${response.raw()} ${response.body()}")
-        }
-
-        override fun onFailure(call: Call<ResWaitDelay>, t: Throwable) {
-            Log.d("retrofit", "대기 미루기 - 응답 실패 t : $t")
-        }
-    })
-}
-
-private fun stampNumCheck(WaitIndex: WaitIndexInt){
-    val iRetrofit : IRetrofit? = RetrofitClient.getClient(API.BASE_URL)?.create(IRetrofit::class.java)
-    val call = iRetrofit?.stampNumCheck(WaitIndex) ?:return
-
-    call.enqueue(object : Callback<StampInfo>{
-        override fun onResponse(call: Call<StampInfo>, response: Response<StampInfo>) {
-            Log.d("retrofit","스탬프 개수 확인 - 응답 성공 / t : ${response.raw()} ${response.body()}")
-            Log.d("baby", response.body()!!.stamp.toString())
-            stampNum = response.body()!!.stamp
-
-            if(stampNum > 0) {
-                waitingDelay(ResDelayInfo("23", "032 934 6188"))
-            }
-            else{
-                /*val dialog = CustomDialog(this, "스탬프 개수가 부족합니다", 0, 1 )
-                dialog.isCancelable = true
-                dialog.show(this.parentFragmentManager, "ConfirmDialog")*/
-                Log.d("retrofit", "스탬프 개수 부족")
-            }
-
-        }
-
-        override fun onFailure(call: Call<StampInfo>, t: Throwable) {
-            Log.d("retrofit", "스탬프 개수 확인 - 응답 실패 t : $t")
-        }
-    })
-}

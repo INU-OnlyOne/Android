@@ -65,13 +65,15 @@ interface IRetrofit {
     fun waitingDelay(@Body ResDelayInfo: ResDelayInfo) : Call<ResWaitDelay>
 
     @POST("/user/checkId")
-    fun checkId(@Body userPhone: UserPhone) : Call<CheckedInfo>
+    @FormUrlEncoded
+    fun checkId(@Body requestBody: RequestBody) : Call<CheckedInfo>
 
     @POST("/user/join")
+    @FormUrlEncoded
     fun join(@Body requestBody: RequestBody) : Call<CheckedInfo>
 
     @POST("/user/stamp")
-    fun stampNumCheck(@Body WaitIndex: WaitIndexInt) : Call<StampInfo>
+    fun stampNumCheck(@Body requestBody: RequestBody) : Call<StampInfo>
 
     @POST("/user/stamp")
     fun CheckStamp(@Body UserPhone: UserPhone) : Call<StampInfo>
